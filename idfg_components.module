@@ -158,9 +158,10 @@ function idfg_components_field_formatter_view($entity_type, $entity, $field, $in
  * @param $countries
  */
 function idfg_components_countries_alter(&$countries) {
-  $US = $countries['US'];
-  unset($countries['US']);
-  array_unshift($countries, $US);
+  $country_key = 'US';
+  $country_data = $countries[$country_key];
+  unset($countries[$country_key]);
+  $countries = array_merge(array($country_key=>$country_data),$countries);
 }
 
 /**
