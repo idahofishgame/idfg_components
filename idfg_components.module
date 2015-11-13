@@ -1,0 +1,249 @@
+<?php
+
+/**
+ * @file
+ * Blocks and other customizations.
+ */
+
+/**
+ * Implementation of hook_block_info().
+ * Adds blocks from code.
+ */
+function idfg_components_block_info() {
+  $blocks['crumbs'] = array(
+    'info' => t('IDFG Components Breadcrumbs'),
+    'cache' => DRUPAL_CACHE_GLOBAL
+  );
+  $blocks['search'] = array(
+    'info' => t('IDFG Components Search'),
+    'cache' => DRUPAL_CACHE_PER_ROLE
+  );
+  $blocks['regions'] = array(
+    'info' => t('IDFG Components Region Picker'),
+    'cache' => DRUPAL_CACHE_GLOBAL
+  );
+  $blocks['menu'] = array(
+    'info' => t('IDFG Components Menu'),
+    'cache' => DRUPAL_CACHE_PER_ROLE
+  );
+  $blocks['apps'] = array(
+    'info' => t('IDFG Components Apps'),
+    'cache' => DRUPAL_CACHE_GLOBAL
+  );
+  $blocks['terms'] = array(
+    'info' => t('IDFG Components Terms'),
+    'cache' => DRUPAL_CACHE_GLOBAL
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_info_alter().
+ */
+function idfg_components_block_info_alter(&$blocks, $theme, $code_blocks) {
+  if ($theme == 'bison') {
+    if (isset($blocks['idfg_components']['idfg_components_crumbs'])) {
+      $blocks['idfg_components']['idfg_components_crumbs']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_crumbs']['region'] = 'Utilities First';
+      $blocks['idfg_components']['idfg_components_crumbs']['weight'] = -1;
+      $blocks['idfg_components']['idfg_components_crumbs']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+    if (isset($blocks['idfg_components']['idfg_components_search'])) {
+      $blocks['idfg_components']['idfg_components_search']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_search']['region'] = 'Utilities Second';
+      $blocks['idfg_components']['idfg_components_search']['weight'] = 1;
+      $blocks['idfg_components']['idfg_components_search']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+    if (isset($blocks['idfg_components']['idfg_components_regions'])) {
+      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Top panel top';
+      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
+      $blocks['idfg_components']['idfg_components_apps']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+    if (isset($blocks['idfg_components']['idfg_components_menu'])) {
+      $blocks['idfg_components']['idfg_components_menu']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_menu']['region'] = 'Top panel top';
+      $blocks['idfg_components']['idfg_components_menu']['weight'] = 0;
+      $blocks['idfg_components']['idfg_components_menu']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+    if (isset($blocks['idfg_components']['idfg_components_apps'])) {
+      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Footer';
+      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
+      $blocks['idfg_components']['idfg_components_apps']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+    if (isset($blocks['idfg_components']['idfg_components_terms'])) {
+      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
+      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Footer bottom';
+      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
+      $blocks['idfg_components']['idfg_components_apps']['visibility'] = BLOCK_VISIBILITY_LISTED;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_block_view().
+ * Block display code.
+ */
+function idfg_components_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'crumbs':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_crumbs_content();
+      break;
+    case 'search':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_search_content();
+      break;
+    case 'regions':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_regions_content();
+      break;
+    case 'menu':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_menu_content();
+      break;
+    case 'apps':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_apps_content();
+      break;
+    case 'terms':
+      $block['subject'] = NULL;
+      $block['content'] = _idfg_components_terms_content();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ * Add a day calendar formatter.
+ */
+function idfg_components_field_formatter_info() {
+  return array(
+    'idfg_day_calendar' => array(
+      'label' => t('Day calendar'),
+      'field types' => array('datestamp','datetime','date'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ * Creates a Calendar Badge with three letter month and digit day.
+ */
+function idfg_components_field_formatter_view($entity_type, $entity, $field, $instance, $lang_code, $items, $display) {
+  $elements = array();
+  foreach ($items as $delta => $item) {
+    if ($item['date_type'] == 'datestamp') {
+      $day = date('j',$item['value']);
+      $month = date('M',$item['value']);
+    }
+    else {
+      $day = format_date(strtotime($item['value']), 'custom', 'j');
+      $month = format_date(strtotime($item['value']), 'custom', 'M');
+    }
+    $elements[$delta] = array(
+      '#markup' => '<div class="dateblock"><span class="month">'.$month.'</span><span class="day">'.$day.'</span></div>',
+    );
+  }
+  return $elements;
+}
+
+/**
+ * Implements hook_countries_alter().
+ * Reorder countries list.
+ * @param $countries
+ */
+function idfg_components_countries_alter(&$countries) {
+  $US = $countries['US'];
+  unset($countries['US']);
+  array_unshift($countries, $US);
+}
+
+/**
+ * Helper function returns breadcrumb block content.
+ * @return string
+ */
+function _idfg_components_crumbs_content() {
+  return '<div id="idfg-breadcrumb-context"><a href="http://www.idaho.gov/">Idaho</a> &raquo; <a href="http://fishandgame.idaho.gov/" title="Idaho Department of Fish and Game">Department of Fish and Game</a></div>';
+}
+
+/**
+ * Helper function builds login/account url and destination/returnurl.
+ * @return string
+ */
+function _idfg_components_destination() {
+  global $cookie_domain;
+  if (strpos(strrev($cookie_domain), 'vog.ohadi') === 0) {
+    $destination = 'https://idfg.idaho.gov/accounts';
+  }
+  else {
+    $destination = '/user';
+  }
+  // Build returnUrl parameter (Destination in Drupal parlance).
+  $params = array_change_key_case(drupal_get_query_parameters(), CASE_LOWER);
+  if (isset($params['returnurl']) && (!empty($params['returnurl']))) {
+    $return = urldecode($params['returnurl']);
+  }
+  elseif (isset($params['destination']) && (!empty($params['destination']))) {
+    $return = urldecode($params['destination']);
+  }
+  else {
+    $return = $_SERVER['REQUEST_URI'];
+  }
+  return $destination.'?returnurl='.$return;
+}
+
+/**
+ * Helper function returns search and login link user bar content.
+ * @return string
+ */
+function _idfg_components_search_content() {
+  $destination = _idfg_components_destination();
+  // Output links.
+  return '<ul class="menu nav nav-pills navbar-right">
+    <li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-group has-feedback"><input id="search" name="search" placeholder="Search" required="true" type="text" /><span class="glyphicon glyphicon-search"></span><input id="cmdSubmit" value="Go" type="submit" /></form></li>
+    <li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">Login</span></a></li>
+  </ul>';
+}
+
+/**
+ * Helper function returns region imagemap content.
+ * @return string
+ */
+function _idfg_components_regions_content() {
+  $idfg_components_path = $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'idfg_components');
+  return '<div id="idfgRegionMap"><img alt="IDFG Regions" src="'.$idfg_components_path.'/images/RegionMap.gif" title="Explore our Regions" usemap="#regions-imagemap" /></div><map id="regions-imagemap" name="regions-imagemap"><area alt="Region 1 - Panhandle" coords="8,8,19,9,18,25,28,36,18,36,15,36,10,34,8,35" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=163" shape="poly" title="Region 1 - Panhandle" /><area alt="Region 2 - Clearwater" coords="8,33,16,36,26,36,35,40,31,53,24,55,17,53,11,56,11,51,6,46" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=164" shape="poly" title="Region 2 - Clearwater" /><area alt="Region 3 - Southwest" coords="9,58,16,55,24,57,30,60,21,66,25,77,19,84,19,95,23,102,5,103,7,76,5,70,5,67" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=165" shape="poly" title="Region 3 - Southwest" /><area alt="Region 4 - Magic Valley" coords="23,79,31,77,43,82,42,88,49,102,24,102,19,93,19,87,19,85" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=169" shape="poly" title="Region 4 - Magic Valley" /><area alt="Region 5 - Southeast" coords="44,81,55,86,67,85,68,103,49,101,47,92,42,91,41,86" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=166" shape="poly" title="Region 5 - Southeast" /><area alt="Region 6 - Upper Snake" coords="61,64,65,69,66,83,61,84,52,82,44,79,39,79,35,76,47,68,53,65" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=171" shape="poly" title="Region 6 - Upper Snake" /> <area alt="Region 7 - Salmon" coords="37,49,47,66,28,75,23,65,31,60,30,55" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=170" shape="poly" title="Region 7 - Salmon" /><area alt="View list of all Regions" coords="0,0,90,111" href="http://fishandgame.idaho.gov/public/about/offices/?getPage=52" shape="rect" title="View list of all Regions" /></map>';
+}
+
+/**
+ * Helper function returns menu content.
+ * Regenerate using http://fishandgame.idaho.gov/i/services/site/menu/1.bootstrap
+ * TODO Replace with menu and jsonp service after launch.
+ * @return string
+ */
+function _idfg_components_menu_content() {
+  $destination = _idfg_components_destination();
+  return '<ul class="menu nav navbar-nav"><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/hunt/" title="Hunting">Hunting</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/hunt/" title="Hunting Homepage">Hunting</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/rules/" title="Seasons and Rules">Seasons and Rules</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/rules/?getPage=63" title="Big Game">Big Game</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/rules/?getPage=64" title="Moose, Bighorn Sheep and Mountain Goat">Moose, Bighorn Sheep and Mountain Goat</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/rules/?getPage=67" title="Upland Game,  Furbearer and Turkey">Upland Game,  Furbearer and Turkey</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/rules/?getPage=66" title="Waterfowl">Waterfowl</a></li><li class="leaf"><a class="menu-category" href="https://idfg.idaho.gov/hunting/beginners-guide" title="Beginners Guide to Hunting">Beginners Guide to Hunting</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=30" title="Hunter Education">Hunter Education</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/" title="Controlled Hunt Information">Controlled Hunt Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/results/" title="Drawing Results">Drawing Results</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/lookupOdds.cfm" title="Drawing Odds">Drawing Odds</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=86" title="Application Information">Application Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/ifwis/huntplanner/stats.aspx" title="Controlled Hunt Harvest Statistics">Controlled Hunt Harvest Statistics</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/?getPage=137" title="2015 Leftover Controlled Hunt Tags">2015 Leftover Controlled Hunt Tags</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/content/superhunt" title="Idaho Super Hunts">Idaho Super Hunts</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/?getpage=113" title="Game Species Information">Game Species Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=326" title="Upland Game Outlook">Upland Game Outlook</a></li><li class="leaf"><a href="https://idfg.idaho.gov/2015-deer-elk-outlook" title="Deer and Elk Outlook">Deer and Elk Outlook</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/ifwis/huntplanner/accessyesguide.aspx" title="Access Yes!">Access Yes!</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/?getPage=250" title="Hunting Access / Maps">Hunting Access / Maps</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=152" title="Motorized Vehicles and Hunting">Motorized Vehicles and Hunting</a></li><li class="leaf"><div class="menu-category">Harvest Quotas / Limits</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=145" title="River Otter">River Otter</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=159" title="Mountain Lion">Mountain Lion</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=121" title="Wolf">Wolf</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/?getPage=68" title="Applications / Forms">Applications / Forms</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/?getPage=106" title="Hunter Report">Hunter Report</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/?getPage=141" title="Trapping and Furbearer Information">Trapping and Furbearer Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/furTaker.cfm" title="Hunting Report for Furtakers">Hunting Report for Furtakers</a></li><li class="leaf"><div class="menu-category">Weapons</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/rules/?getPage=299" title="Muzzleloader-ONLY Hunts">Muzzleloader-ONLY Hunts</a></li><li class="leaf"><div class="menu-category">Big Game</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/ifwis/huntplanner/stats.aspx" title="General Season and Controlled Hunt Harvest Statistics">General Season and Controlled Hunt Harvest Statistics</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/lookupBgRecords.cfm" title="Records">Records</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/hunt/?getPage=293" title="Public Shooting Ranges">Public Shooting Ranges</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/ifwis/huntPlanner/" title="Hunt Planner">Hunt Planner</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/fish/" title="Fishing">Fishing</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/fish/" title="Fishing Homepage">Fishing</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/rules/" title="Seasons / Rules">Seasons / Rules</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=140" title="Chinook Salmon">Chinook Salmon</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=110" title="Seasons and Rules">Seasons and Rules</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=114" title="Harvest Report">Harvest Report</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=111" title="Bonneville/Lower Granite Dam Counts">Bonneville/Lower Granite Dam Counts</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/fish/hatchery-returns-chinook" title="Hatchery Returns">Hatchery Returns</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=38" title="Steelhead">Steelhead</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/rules/steelhead.pdf" title="Seasons and Rules - [PDF, 2.6 mb]">Seasons and Rules - [PDF, 2.6 mb]</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=126" title="Harvest Report">Harvest Report</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=122" title="Bonneville/Lower Granite Dam Counts">Bonneville/Lower Granite Dam Counts</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/stocking/" title="Fish Stocking">Fish Stocking</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=36" title="Sockeye Salmon">Sockeye Salmon</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=232" title="Fishing Reports">Fishing Reports</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=252" title="Family Fishing Waters">Family Fishing Waters</a></li><li class="leaf"><a class="menu-category" href="https://fishandgame.idaho.gov/content/icefishing" title="Ice Fishing">Ice Fishing</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=154" title="Learn To Fish">Learn To Fish</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/fish/?getPage=252" title="Family Fishing Waters">Family Fishing Waters</a></li><li class="leaf"><a class="menu-category" href="https://idfg.idaho.gov/fishing/etiquette" title="Angler Etiquette">Angler Etiquette</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/guides/" title="Angler Guide">Angler Guide</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=84" title="Hatcheries">Hatcheries</a></li><li class="leaf"><div class="menu-category">Tagging Programs</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/feedback/fish/forms/reportTaggedFishAngler.cfm" title="Report Tagged Fish">Report Tagged Fish</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=82" title="Record Fish">Record Fish</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/?getPage=68#fish" title="Applications / Forms">Applications / Forms</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=267" title="Tournaments">Tournaments</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/fish/?getPage=247" title="Programs and Plans">Programs and Plans</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/ifwis/fishingPlanner/" title="Fishing Planner">Fishing Planner</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/licenses/" title="Licenses">Licenses</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/licenses/" title="Licenses Homepage">Licenses</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/fees/" title="Purchase A License, Tag, Permit:">Purchase A License, Tag, Permit:</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=364" title="3-Year Licenses">3-Year Licenses</a></li><li class="leaf"><a href="https://id.outdoorcentral.us/" title="Online">Online</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/lookupVendors.cfm" title="License Vendors">License Vendors</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/" title="Fish and Game Offices">Fish and Game Offices</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/fees/" title="Resident Fees / Info">Resident Fees / Info</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=78" title="Residency Requirements">Residency Requirements</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Resident&amp;feeType=License&amp;feeCategory=" title="License Fees">License Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Resident&amp;feeType=Tag&amp;feeCategory=" title="Tag Fees">Tag Fees</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/second-tag" title="Second Tags">Second Tags</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Resident&amp;feeType=Permit&amp;feeCategory=" title="Permit Fees">Permit Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Resident&feeType=Controlled+Hunt" title="Controlled Hunt Tag Fees">Controlled Hunt Tag Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/" title="Controlled Hunt Information">Controlled Hunt Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/?getPage=86" title="Controlled Hunt Application Information">Controlled Hunt Application Information</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/license/residenttagavailability" title="Elk Tag Quotas">Elk Tag Quotas</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/lifetimeCertificates/" title="Lifetime Licenses">Lifetime Licenses</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=51" title="Active Military Options">Active Military Options</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=289" title="Disabled Veterans Programs">Disabled Veterans Programs</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=332" title="Hunting Passport">Hunting Passport</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/fees/" title="Nonresident Fees / Info">Nonresident Fees / Info</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Nonresident&amp;feeType=License&amp;feeCategory=" title="License Fees">License Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Nonresident&amp;feeType=Tag&amp;feeCategory=" title="Tag Fees">Tag Fees</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/second-tag" title="Second Tags">Second Tags</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Nonresident&amp;feeType=Permit&amp;feeCategory=" title="Permit Fees">Permit Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/fees/displayFees.cfm?resType=Nonresident&feeType=Controlled+Hunt" title="Controlled Hunt Tag Fees">Controlled Hunt Tag Fees</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/" title="Controlled Hunt Information">Controlled Hunt Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/?getPage=86" title="Controlled Hunt Application Information">Controlled Hunt Application Information</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/license/nonresidentTagAvailability" title="Deer and Elk Tag Quotas">Deer and Elk Tag Quotas</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/huntNonresidentApp.pdf" title="Nonresident License Application - [PDF, 460 kb]">Nonresident License Application - [PDF, 460 kb]</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=143" title="Hound Hunter Information / Application">Hound Hunter Information / Application</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=289" title="Disabled Veterans Programs">Disabled Veterans Programs</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=332" title="Hunting Passport">Hunting Passport</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/" title="Controlled Hunt Information">Controlled Hunt Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/results/" title="Drawing Results">Drawing Results</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/lookupOdds.cfm" title="Drawing Odds">Drawing Odds</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=86" title="Application Information">Application Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/ifwis/huntplanner/stats.aspx" title="General Season and Controlled Hunt Harvest Statistics">General Season and Controlled Hunt Harvest Statistics</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/controlledHunts/?getPage=137" title="2015 Leftover Controlled Hunt Tags">2015 Leftover Controlled Hunt Tags</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/licenses/?getPage=68" title="Applications / Forms">Applications / Forms</a></li><li class="leaf"><div class="menu-category">Disabled/Special Needs</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=289" title="Disabled Veterans Programs">Disabled Veterans Programs</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/licenses/?getPage=356" title="Disabled Hunter Companion Rules">Disabled Hunter Companion Rules</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/wildlife/" title="Wildlife">Wildlife</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/wildlife/" title="Wildlife Homepage">Wildlife</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/wolves/" title="Wolves">Wolves</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=121" title="Wolf Harvest Information">Wolf Harvest Information</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=294" title="Wolf Trapper Course">Wolf Trapper Course</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/wildlife/wolves/?getPage=161" title="Timeline - Reintroduction and Recovery">Timeline - Reintroduction and Recovery</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/sageGrouse/" title="Sage-grouse">Sage-grouse</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=248" title="Grizzly Bears">Grizzly Bears</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/education/bearIdentification/" title="Bear Identification Program">Bear Identification Program</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/wma/" title="Wildlife Management Areas">Wildlife Management Areas</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/nongame/" title="Wildlife Diversity Program">Wildlife Diversity Program</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=223" title="Lands / Landowners">Lands / Landowners</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=138" title="Wildlife Diseases">Wildlife Diseases</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/wildlife/?getPage=209" title="Echinococcus Granulosus">Echinococcus Granulosus</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/wildlife/?getPage=213" title="Chronic Wasting Disease">Chronic Wasting Disease</a></li><li class="leaf"><a class="menu-category" href="https://fishandgame.idaho.gov/content/mdi" title="Mule Deer Initiative">Mule Deer Initiative</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=249" title="Wildlife Plans">Wildlife Plans</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/wildlife/?getPage=324" title="Elk Management Planning Process">Elk Management Planning Process</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=325" title="Predator Management">Predator Management</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/ada/" title="Accessible Idaho">Accessible Idaho</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/?getPage=205" title="Highway Wildlife Collisions">Highway Wildlife Collisions</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/ifwis/roadkill/" title="Report Roadkill/Wildlife Salvage">Report Roadkill/Wildlife Salvage</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/wildlife/cwcs/" title="Comprehensive Wildlife Strategy">Comprehensive Wildlife Strategy</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/education/" title="Education">Education</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/education/" title="Education Homepage">Education</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=30" title="Hunter / Bowhunter / Trapper Education">Hunter / Bowhunter / Trapper Education</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/education/?getPage=59" title="Volunteer Hunter Education Instructor">Volunteer Hunter Education Instructor</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/hed/public/duplicateprintcards.aspx" title="Duplicate Hunter Education Certificate">Duplicate Hunter Education Certificate</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/education/bearIdentification/" title="Bear Identification Program">Bear Identification Program</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=215" title="Project WILD">Project WILD</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=241" title="Wildlife Express Newspaper for Kids">Wildlife Express Newspaper for Kids</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=234" title="MK Nature Center">MK Nature Center</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=178" title="Waterlife Discovery Center">Waterlife Discovery Center</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/education/?getPage=207" title="Lewiston Wildlife Habitat Area">Lewiston Wildlife Habitat Area</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/media/" title="Media">Media</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/media/" title="Media Homepage">Media</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/media/?getPage=179" title="News Releases">News Releases</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/media/?getPage=246" title="&quot;Fish and Game News&quot; Newspaper">&quot;Fish and Game News&quot; Newspaper</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/media/wildlifeExpress/" title="Wildlife Express Newspaper for Kids">Wildlife Express Newspaper for Kids</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/media/windowsWildlife/" title="Windows to Wildlife Newsletter">Windows to Wildlife Newsletter</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/is/media/video" title="Fish and Game Video">Fish and Game Video</a></li><li class="leaf"><a class="menu-category" href="https://fishandgame.idaho.gov/content/articles" title="Fish and Game Articles">Fish and Game Articles</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/science/" title="Science">Science</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/science/" title="Science Homepage">Science</a></li><li class="leaf"><a class="menu-category" href="https://fishandgame.idaho.gov/ifwis/portal/" title="Idaho Fish and Wildlife Information System">Idaho Fish and Wildlife Information System</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/species/observations/" title="Report an Observation">Report an Observation</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/ifwis/roadkill/" title="Report Roadkill/Wildlife Salvage">Report Roadkill/Wildlife Salvage</a></li><li class="leaf"><div class="menu-category">Reports</div></li><li class="leaf"><a href="https://collaboration.idfg.idaho.gov/FisheriesTechnicalReports" title="Fisheries Reports">Fisheries Reports</a></li><li class="leaf"><a href="https://collaboration.idfg.idaho.gov/WildlifeTechnicalReports" title="Wildlife Reports">Wildlife Reports</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/content/page/idaho-natural-heritage-program-technical-reports" title="Natural Heritage Program Technical Reports">Natural Heritage Program Technical Reports</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/enforce/" title="Enforcement">Enforcement</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/enforce/" title="Enforcement Homepage">Enforcement</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/feedback/getForm.cfm?getForm=3" title="Report Wildlife Crimes - Report a Poacher">Report Wildlife Crimes - Report a Poacher</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/enforce/?getPage=204" title="Become a Conservation Officer">Become a Conservation Officer</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/enforce/?getPage=202" title="Citizens Against Poaching - History">Citizens Against Poaching - History</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/enforce/?getPage=142" title="CAP Stories - Thanks to You It Works!">CAP Stories - Thanks to You It Works!</a></li></ul></li><li class="expanded dropdown active"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="http://fishandgame.idaho.gov/public/about/" title="About Us">About Us</a><ul class="dropdown-menu"><li class="leaf"><a class="menu-header" href="http://fishandgame.idaho.gov/public/about/" title="About Us Homepage">About Us</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/contact/" title="Contact Us">Contact Us</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/employment/" title="Employment">Employment</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/employment/tempEmploymentApp.pdf" title="Application for Temporary Employment - [PDF, 26 kb]">Application for Temporary Employment - [PDF, 26 kb]</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/commission/" title="Fish and Game Commission">Fish and Game Commission</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/commission/?getPage=183" title="Commission Members">Commission Members</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/commission/?getPage=184" title="Meeting Schedule">Meeting Schedule</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/commission/selectYear.cfm" title="Meeting Agendas and Minutes">Meeting Agendas and Minutes</a></li><li class="leaf"><a href="https://fishandgame.idaho.gov/content/legislative-updates" title="Legislative Information and Updates">Legislative Information and Updates</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/?getPage=33" title="Negotiated Rulemaking Process">Negotiated Rulemaking Process</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/offices/" title="Offices / Regions">Offices / Regions</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=163" title="Panhandle Region">Panhandle Region</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=164" title="Clearwater Region">Clearwater Region</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=165" title="Southwest  Region - McCall Subregion">Southwest  Region - McCall Subregion</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=169" title="Magic Valley Region">Magic Valley Region</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=166" title="Southeast Region">Southeast Region</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=171" title="Upper Snake Region">Upper Snake Region</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/offices/?getPage=170" title="Salmon Region">Salmon Region</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/volunteer/" title="Volunteer">Volunteer</a></li><li class="leaf"><div class="menu-category">History / Funding / Direction</div></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/?getPage=270" title="Directors Reports to the Commission">Directors Reports to the Commission</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about?getPage=191" title="The Compass">The Compass</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about?getPage=192" title="Direction Documents">Direction Documents</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/?getPage=339" title="Performance Measurement Reports">Performance Measurement Reports</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/public/about/?getpage=320" title="Wildlife Summit">Wildlife Summit</a></li><li class="leaf"><a href="http://fishandgame.idaho.gov/75th/" title="75th Anniversary Timeline">75th Anniversary Timeline</a></li><li class="leaf"><a class="menu-category" href="http://fishandgame.idaho.gov/public/about/?getPage=290" title="Vintage Posters, Prints and Stamps For Sale">Vintage Posters, Prints and Stamps For Sale</a></li><li class="leaf"><a class="menu-category" href="https://fishandgame.idaho.gov/content/questions" title="Ask Fish and Game">Ask Fish and Game</a></li></ul></li><li class="navbar-mobile active"><a href="http://fishandgame.idaho.gov/search/" title="Search"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search</a></li><li class="accounts-login-link navbar-mobile active"><a href="https://idfg.idaho.gov/accounts" title="User Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">My Account</span></a></li></ul>';
+}
+
+/**
+ * Helper function returns apps section content.
+ * @return string
+ * TODO Replace with dynamic menu and jsonp service after launch.
+ */
+function _idfg_components_apps_content() {
+  $idfg_components_path = $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'idfg_components');
+  return '<div id="idfgFooterImageLinks" class="clearfix"><div id="idfgFooterIcons"><div id="idfgFooterIconic"><div id="idfgFooterIconicTop"><a href="http://www.youtube.com/user/idahofishgame" title="IDFG on YouTube"><img alt="YouTube Icon" src="'.$idfg_components_path.'/images/youtube.png" title="IDFG on YouTube" /></a> <a href="http://twitter.com/idfg" title="IDFG on Twitter"><img alt="Twitter Icon" src="'.$idfg_components_path.'/images/twitter.png" title="IDFG on Twitter" /></a></div><div id="idfgFooterIconicBottom"><a href="http://flickr.com/photos/idfg" title="IDFG on Flickr"><img alt="Flick Icon" src="'.$idfg_components_path.'/images/flickr.png" title="IDFG on Flickr" /></a> <a href="https://fishandgame.idaho.gov/content/page/rss-feeds" title="RSS Feed"><img alt="RSS Icon" src="'.$idfg_components_path.'/images/rss.png" title="RSS" /></a></div></div></div><div><a href="https://id.outdoorcentral.us/" title="Buy your hunting and fishing licenses here!"><img alt="Take Me Fishing Icon" src="'.$idfg_components_path.'/images/tinySoldHere.png" /></a><a href="https://id.outdoorcentral.us/" title="Buy your hunting and fishing licenses here!">Buy Licenses</a></div><div><a href="http://fishandgame.idaho.gov/ifwis/huntPlanner/" title="Plan your hunting trip!"><img alt="Hunt Planner Icon" src="'.$idfg_components_path.'/images/tinyHuntPlanner.png" /></a><a href="http://fishandgame.idaho.gov/ifwis/huntPlanner/" title="Plan your hunting trip!">Hunt Planner</a></div><div><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=30" title="Hunter education classes"><img alt="Hunter Education Icon" src="'.$idfg_components_path.'/images/tinyHuntEd.png" /></a><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=30" title="Hunter education classes">Hunter Ed</a></div><div><a href="http://fishandgame.idaho.gov/ifwis/fishingPlanner/" title="Plan your fishing trip!"><img alt="Fishing Planner Icon" src="'.$idfg_components_path.'/images/tinyFishPlanner.png" /></a><a href="http://fishandgame.idaho.gov/ifwis/fishingPlanner/" title="Plan your fishing trip!">Fishing Planner</a></div><div><a href="http://www.ifwf.org/" title="Idaho Fish and Wildlife Foundation"><img alt="Idaho Fish and Wildlife Foundation Icon" src="'.$idfg_components_path.'/images/tinyIFWF.png" /></a><a href="http://www.ifwf.org/" title="Idaho Fish and Wildlife Foundation">IFWF</a></div><!--<div><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=22" title="Enter the Super Hunt drawing!"><img alt="Super Hunt Icon" src="'.$idfg_components_path.'/images/tinySuperHunt.png" /></a><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=22" title="Enter the Super Hunt drawing!">Super Hunt</a></div>--><div><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=106" title="Mandatory Hunt Report"><img alt="Mandatory Hunt Report Icon" src="'.$idfg_components_path.'/images/tinyHarvReport.png" /></a><a href="http://fishandgame.idaho.gov/public/hunt/?getPage=106" title="Mandatory Hunt Report">Hunt Report</a></div><div><a href="http://fishandgame.idaho.gov/public/enforce/?getPage=142" title="Citizens Against Poaching 1-800-632-5999"><img alt="Citizens Against Poaching Icon" src="'.$idfg_components_path.'/images/tinyCAP.png" /></a><a href="http://fishandgame.idaho.gov/public/enforce/?getPage=142" title="Citizens Against Poaching 1-800-632-5999">Report Poaching</a></div><div><a href="http://fishandgame.idaho.gov/public/about/volunteer/" title="Volunteer Reserve"><img alt="Volunteer Reserve" src="'.$idfg_components_path.'/images/tinyVolunteer.png" /></a><a href="http://fishandgame.idaho.gov/public/about/volunteer/" title="Volunteer Reserve">Volunteer!</a></div><div><a href="https://fishandgame.idaho.gov/ifwis/roadkill" title="Report a Wildlife Collision"><img alt="Report a Wildlife Collision" src="' . $idfg_components_path . '/images/ifwis_roadkill.png" /></a><a href="https://fishandgame.idaho.gov/ifwis/roadkill" title="Report a Wildlife Collision">Report Roadkill</a></div></div></div>';
+}
+
+/**
+ * Helper function returns terms of use and copyright section content.
+ * @return string
+ */
+function _idfg_components_terms_content() {
+  return '<div id="idfg-terms"><ul><li><a href="/public/about/contact/">Contact Us</a></li><li><a href="/public/about/employment/">Employment</a></li><li><a href="/public/about/volunteer/">Volunteer</a></li><li><a href="/public/about/privacy/">Privacy Policy</a></li><li><a href="/public/about/terms/">Terms and Conditions</a></li><li>&copy; 2015 Idaho Fish and Game</li></ul></div>';
+}
