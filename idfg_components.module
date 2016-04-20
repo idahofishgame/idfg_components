@@ -38,44 +38,6 @@ function idfg_components_block_info() {
 }
 
 /**
- * Implements hook_block_info_alter().
- */
-function idfg_components_block_info_alter(&$blocks, $theme, $code_blocks) {
-  if ($theme == 'bison') {
-    if (isset($blocks['idfg_components']['idfg_components_crumbs'])) {
-      $blocks['idfg_components']['idfg_components_crumbs']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_crumbs']['region'] = 'Utilities First';
-      $blocks['idfg_components']['idfg_components_crumbs']['weight'] = -1;
-    }
-    if (isset($blocks['idfg_components']['idfg_components_search'])) {
-      $blocks['idfg_components']['idfg_components_search']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_search']['region'] = 'Utilities Second';
-      $blocks['idfg_components']['idfg_components_search']['weight'] = 1;
-    }
-    if (isset($blocks['idfg_components']['idfg_components_regions'])) {
-      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Top panel top';
-      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
-    }
-    if (isset($blocks['idfg_components']['idfg_components_menu'])) {
-      $blocks['idfg_components']['idfg_components_menu']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_menu']['region'] = 'Navigation';
-      $blocks['idfg_components']['idfg_components_menu']['weight'] = 0;
-    }
-    if (isset($blocks['idfg_components']['idfg_components_apps'])) {
-      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Footer';
-      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
-    }
-    if (isset($blocks['idfg_components']['idfg_components_terms'])) {
-      $blocks['idfg_components']['idfg_components_apps']['status'] = 1;
-      $blocks['idfg_components']['idfg_components_apps']['region'] = 'Footer bottom';
-      $blocks['idfg_components']['idfg_components_apps']['weight'] = 0;
-    }
-  }
-}
-
-/**
  * Implementation of hook_block_view().
  * Block display code.
  */
