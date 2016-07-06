@@ -160,8 +160,13 @@ function _idfg_components_destination() {
  */
 function _idfg_components_search_content() {
   $destination = _idfg_components_destination();
+  $login = 'Login';
+  if (user_is_logged_in()) {
+    global $user;
+    $login = format_username($user);
+  }
   // Output links.
-  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" required="true" type="text"/><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">Login</span></a></li></ul>';
+  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" required="true" type="text"/><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">'.$login.'</span></a></li></ul>';
 }
 
 /**
