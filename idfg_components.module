@@ -16,7 +16,7 @@ function idfg_components_block_info() {
   );
   $blocks['search'] = array(
     'info' => t('IDFG Components Search'),
-    'cache' => DRUPAL_CACHE_PER_ROLE
+    'cache' => DRUPAL_CACHE_PER_USER
   );
   $blocks['regions'] = array(
     'info' => t('IDFG Components Region Picker'),
