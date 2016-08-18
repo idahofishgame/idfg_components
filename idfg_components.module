@@ -143,15 +143,15 @@ function _idfg_components_destination() {
   // Build returnUrl parameter (Destination in Drupal parlance).
   $params = array_change_key_case(drupal_get_query_parameters(), CASE_LOWER);
   if (isset($params['returnurl']) && (!empty($params['returnurl']))) {
-    $return = urldecode($params['returnurl']);
+    $return = $params['returnurl'];
   }
   elseif (isset($params['destination']) && (!empty($params['destination']))) {
-    $return = urldecode($params['destination']);
+    $return = $params['destination'];
   }
   else {
     $return = $_SERVER['REQUEST_URI'];
   }
-  return $destination.'?returnurl='.$return;
+  return $destination.'?returnurl='.urlencode($return);
 }
 
 /**
@@ -224,6 +224,6 @@ function _idfg_components_apps_content() {
  * @return string
  */
 function _idfg_components_terms_content() {
-  return '<div id="idfg-terms"><ul><li><a title="Contact us" href="https://idfg.idaho.gov/contact">Contact Us</a></li><li><a title="Jobs" href="https://idfg.idaho.gov/jobs">Employment</a></li><li><a title="Volunteer" href="https://idfg.idaho.gov/volunteer">Volunteer</a></li><li><a title="Privacy policy" href="https://idfg.idaho.gov/privacy">Privacy</a></li><li><a title="Terms and conditions" href="https://idfg.idaho.gov/terms">Terms</a></li><li><a title="Report a problem" href="https://idfg.idaho.gov/problem?uri=' . base_path() . request_path() . '">Report Problem</a></li><li>&copy; Idaho Fish and Game</li>  </ul></div>';
+  return '<div id="idfg-terms"><ul><li><a title="Contact us" href="https://idfg.idaho.gov/contact">Contact Us</a></li><li><a title="Jobs" href="https://idfg.idaho.gov/jobs">Employment</a></li><li><a title="Volunteer" href="https://idfg.idaho.gov/volunteer">Volunteer</a></li><li><a title="Privacy policy" href="https://idfg.idaho.gov/privacy">Privacy</a></li><li><a title="Terms and conditions" href="https://idfg.idaho.gov/terms">Terms</a></li><li><a title="Report a problem" href="https://idfg.idaho.gov/problem?uri=' . urlencode(base_path() . request_path()) . '">Report Problem</a></li><li>&copy; Idaho Fish and Game</li>  </ul></div>';
 }
 
