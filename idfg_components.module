@@ -93,14 +93,10 @@ function idfg_components_field_formatter_info() {
 function idfg_components_field_formatter_view($entity_type, $entity, $field, $instance, $lang_code, $items, $display) {
   $elements = array();
   foreach ($items as $delta => $item) {
-    if ($item['date_type'] == 'datestamp') {
-      $day = date('j',$item['value']);
-      $month = date('M',$item['value']);
-    }
-    else {
-      $day = format_date(strtotime($item['value']), 'custom', 'j');
-      $month = format_date(strtotime($item['value']), 'custom', 'M');
-    }
+    $date1 = strtotime($item['value'] . ' ' . $item['timezone_db']);
+    $day = format_date($date1, 'custom', 'j', $item['timezone']);
+    $month = format_date($date1, 'custom', 'M', $item['timezone']);
+    
     $elements[$delta] = array(
       '#markup' => '<div class="dateblock"><span class="month">'.$month.'</span><span class="day">'.$day.'</span></div>',
     );
