@@ -129,12 +129,12 @@ function _idfg_components_crumbs_content() {
  * @return string
  */
 function _idfg_components_destination() {
-  global $cookie_domain;
-  if (strpos(strrev($cookie_domain), 'vog.ohadi') === 0) {
+  // If logged in send to homepage, else login.
+  if (user_is_logged_in()) {
     $destination = 'https://idfg.idaho.gov/accounts';
   }
   else {
-    $destination = '/user';
+    $destination = 'https://idfg.idaho.gov/accounts/user/login';
   }
   // Build returnUrl parameter (Destination in Drupal parlance).
   $params = array_change_key_case(drupal_get_query_parameters(), CASE_LOWER);
