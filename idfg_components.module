@@ -96,7 +96,6 @@ function idfg_components_field_formatter_view($entity_type, $entity, $field, $in
     $date1 = strtotime($item['value'] . ' ' . $item['timezone_db']);
     $day = format_date($date1, 'custom', 'j', $item['timezone']);
     $month = format_date($date1, 'custom', 'M', $item['timezone']);
-    
     $elements[$delta] = array(
       '#markup' => '<div class="dateblock"><span class="month">'.$month.'</span><span class="day">'.$day.'</span></div>',
     );
@@ -162,7 +161,7 @@ function _idfg_components_search_content() {
     $login = format_username($user);
   }
   // Output links.
-  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" required="true" type="text" /><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">'.$login.'</span></a></li></ul>';
+  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" type="text" /><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">'.$login.'</span></a></li></ul>';
 }
 
 /**
