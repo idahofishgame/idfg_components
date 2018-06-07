@@ -155,13 +155,13 @@ function _idfg_components_destination() {
  */
 function _idfg_components_search_content() {
   $destination = _idfg_components_destination();
-  $login = 'Login';
+  $login = '';
   if (user_is_logged_in()) {
     global $user;
-    $login = format_username($user);
+    $login = '<li id="navbar-login" class="accounts-login-link"><a href="' . $destination . '" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">' . format_username($user) . '</span></a></li>';
   }
   // Output links.
-  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" type="text" /><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li id="navbar-login" class="accounts-login-link"><a href="'.$destination.'" title="My Account"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="link-text">'.$login.'</span></a></li></ul>';
+  return '<ul class="menu nav nav-pills navbar-right"><li id="navbar-search-form"><form action="https://idfg.idaho.gov/search" id="idfg-site-search" method="get" class="form-inline"><input class="form-control form-text" id="search" name="search" placeholder="Search" type="text" /><button type="submit" class="btn glyphicon glyphicon-search"></button></form></li><li><a href="/buy" title="Buy a license, tag or permit to hunt or fish."><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> <span class="link-text">Buy a License</span></a></li>'.$login.'</ul>';
 }
 
 /**
@@ -219,6 +219,6 @@ function _idfg_components_apps_content() {
  * @return string
  */
 function _idfg_components_terms_content() {
-  return '<div id="idfg-terms"><ul><li><a title="Contact us" href="https://idfg.idaho.gov/contact">Contact Us</a></li><li><a title="Jobs" href="https://idfg.idaho.gov/jobs">Employment</a></li><li><a title="Volunteer" href="https://idfg.idaho.gov/volunteer">Volunteer</a></li><li><a title="Privacy policy" href="https://idfg.idaho.gov/privacy">Privacy</a></li><li><a title="Terms and conditions" href="https://idfg.idaho.gov/terms">Terms</a></li><li><a title="Report a problem" href="https://idfg.idaho.gov/problem?uri=' . urlencode(base_path() . request_path()) . '">Report Problem</a></li><li>&copy; Idaho Fish and Game</li>  </ul></div>';
+  return '<div id="idfg-terms"><ul><li><a title="Contact us" href="https://idfg.idaho.gov/contact">Contact Us</a></li><li><a title="Jobs" href="https://idfg.idaho.gov/jobs">Employment</a></li><li><a title="Volunteer" href="https://idfg.idaho.gov/volunteer">Volunteer</a></li><li><a title="Privacy policy" href="https://idfg.idaho.gov/privacy">Privacy</a></li><li><a title="Terms and conditions" href="https://idfg.idaho.gov/terms">Terms</a></li><li><a title="Report a problem" href="https://idfg.idaho.gov/problem?uri=' . urlencode(base_path() . request_path()) . '">Report Problem</a></li><li>&copy; Idaho Fish and Game</li><li class="pull-right"><a id="footer-login" href="/accounts/user/login">Agency Login</a></li></ul></div>';
 }
 
